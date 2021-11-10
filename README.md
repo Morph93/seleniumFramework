@@ -71,7 +71,7 @@
 
 ### STEPS:
 
-**Each feature file test that you create for UI must carry annotation **@UI** in order to trigger desired functions from
+**Each feature file test that you create for UI must carry annotation @ UI in order to trigger desired functions from
 ApplicationHooks class**
 
 1. Create feature file for desired tests in:
@@ -80,7 +80,7 @@ ApplicationHooks class**
 2. Fill the feature file with:
     1. `Scenario `
     2. `Scenario Outline`
-        1. **Separation of tests for Scenario Outline can be done with annotations ex. **@Smoke / @Regression**. Check login.feature.**
+        1. **Separation of tests for Scenario Outline can be done with annotations ex. @ Smoke / @Regression. Check login.feature.**
 3. Create steps that will map those scenarios/steps in:
     1. `src/test/java/parallel/uiSteps`
     2. `src/test/java/parallel/apiSteps`

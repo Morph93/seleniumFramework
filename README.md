@@ -1,91 +1,117 @@
-# SeleniumStructure
+# FRAMEWORK STRUCTURE!
+
+## First separation:
+
+* main
+    * main should contain everything regarding the structure of the project and all page object models that reflect
+      pages of the project. the
+* test
+    * test should contain all data regarding test cases such as feature files, step classes, runner class...etc.
+
+## Secondary separation:
+
+### main/java:
+
+* apiPOJO -> this package should contain:
+    * sub-packages with API names that should contain: (ex.jiraIntegration, billingService...This can go deeper, check
+      billingService.)
+        * Enum resources class  (ex. jiraIntegration/ResourcesJIRA).
+        * POJO class that reflects response structure (ex. jiraIntegration/CreateIssue class).
 
 
+* com.sixsentix.qa -> this package should contain all custom classes that we are bringing from sixsentix to another
+  company
+    * ex:
+        * FunctionsPage
+        * jdbc
+        * jiraIntegration
+        * etc...
 
-## Getting started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+* xmlExecution -> should contain XML files that will control execution such as number of threads and targeting of runner
+  classes.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
 
-## Add your files
+* pages -> should contain structure of packages/classes that reflect structure of the application that you are working
+  on. Each page should contain HashMap of all elements present on the given page depending on a state for that page.
+  State can vary, and it's triggered by additional actions on that page. Check LoginPage and DashboardPage.
 
-- [ ] [Create](https://gitlab.com/-/experiment/new_project_readme_content:1ec0085bc5e7f2108af871f5758c1c4d?https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://gitlab.com/-/experiment/new_project_readme_content:1ec0085bc5e7f2108af871f5758c1c4d?https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://gitlab.com/-/experiment/new_project_readme_content:1ec0085bc5e7f2108af871f5758c1c4d?https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+### test/java:
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/fgajic/seleniumstructure.git
-git branch -M main
-git push -uf origin main
-```
+* apiHandlers -> this package should contain:
+    * testDataBuilder package which should contain responseSpecification that will match structure of the response of
+      the API call that you are using, so you can send data using it (check LoginAuth).
+    * ApiUtils -> class that contains functions for BE/API calls -> this class is similar to FunctionsPage -> It would
+      be good to relocate it to main/java/com.sixsentix.qa/utils package -> in order to do that some refactoring should
+      be done due to the way it's used in Steps classes.
 
-## Integrate with your tools
 
-- [ ] [Set up project integrations](https://gitlab.com/-/experiment/new_project_readme_content:1ec0085bc5e7f2108af871f5758c1c4d?https://docs.gitlab.com/ee/user/project/integrations/)
+* parallel package -> This package should contain:
+    * steps for API test cases -> contains mapped steps from cucumber feature files for API test.
+    * steps for UI test cases -> contains mapped steps from cucumber feature files for UI test.
+    * Application Hooks class -> which handles everything that we be done before and after test.
+    * Runner class -> which is used to target specific tests and set plugins that you wish to use.
 
-## Collaborate with your team
+### test/resources:
 
-- [ ] [Invite team members and collaborators](https://gitlab.com/-/experiment/new_project_readme_content:1ec0085bc5e7f2108af871f5758c1c4d?https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://gitlab.com/-/experiment/new_project_readme_content:1ec0085bc5e7f2108af871f5758c1c4d?https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://gitlab.com/-/experiment/new_project_readme_content:1ec0085bc5e7f2108af871f5758c1c4d?https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Automatically merge when pipeline succeeds](https://gitlab.com/-/experiment/new_project_readme_content:1ec0085bc5e7f2108af871f5758c1c4d?https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+* parallel package should contain:
+    * api package -> which will contain subpackages that match structure of api calls which will contain feature files
+      for API tests
+    * ui package -> which will contain subpackages that match structure of UI from application side which will contain
+      feature files for UI tests
 
-## Test and Deploy
+* cucumber.properties -> one liner, set if you wish to publish default cucumber report online and have access to it from
+  the cloud.
+* extent.properties -> configuration for extent report, location, naming...etc. Check extent documentation
+  online: https://www.extentreports.com/docs/versions/4/java/spark-reporter.html
+* extent-config.xml -> similar like properties, configuration for extent report. Check documentation.
+* logback.xml -> for depth level of logs.
 
-Use the built-in continuous integration in GitLab.
+# WRITING,RUNNING AND REPORTING!
 
-- [ ] [Get started with GitLab CI/CD](https://gitlab.com/-/experiment/new_project_readme_content:1ec0085bc5e7f2108af871f5758c1c4d?https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://gitlab.com/-/experiment/new_project_readme_content:1ec0085bc5e7f2108af871f5758c1c4d?https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://gitlab.com/-/experiment/new_project_readme_content:1ec0085bc5e7f2108af871f5758c1c4d?https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://gitlab.com/-/experiment/new_project_readme_content:1ec0085bc5e7f2108af871f5758c1c4d?https://docs.gitlab.com/ee/user/clusters/agent/)
+### STEPS:
 
-***
+**Each feature file test that you create for UI must carry annotation @UI in order to trigger desired functions from
+ApplicationHooks class**
 
-# Editing this README
+1. Create feature file for desired tests in:
+    1. `src/test/resources/parallel/ui`
+    2. `src/test/resources/parallel/api`
+2. Fill the feature file with:
+    1. `Scenario `
+    2. `Scenario Outline`
+        1. **Separation of tests for Scenario Outline can be done with annotations ex. @Smoke / @Regression. Check login.feature.**
+3. Create steps that will map those scenarios/steps in:
+    1. `src/test/java/parallel/uiSteps`
+    2. `src/test/java/parallel/apiSteps`
+4. Create page class for the page you wish to test in: `src/main/java/pages`
+5. Fill the page class with the elements of that page using `HashMap<String, By> mapOfPageElements = new HashMap<>();`
+6. Initiate that map in constructor of the page class
+7. Use functions created in page class in the steps by creating object of the page class.
+   ex. `LoginPage loginPage = new LoginPage(DriverFactory.getDriver(), "");` -> `loginPage.checkAllElements();`
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!).  Thank you to [makeareadme.com](https://gitlab.com/-/experiment/new_project_readme_content:1ec0085bc5e7f2108af871f5758c1c4d?https://www.makeareadme.com/) for this template.
+### EXECUTION:
 
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+**There are multiple ways to execute test cases**
 
-## Name
-Choose a self-explaining name for your project.
+1. Directly from feature file by **right-clicking** on specific Scenario or Scenario Outline and then choosing **Run**.
+   That way you will run desired test in single thread.
+2. From Runner class in our case **RunTests**. Right-click on the class and choose **Run**. If you choose to run tests
+   like this, the tests will run in multithreading creating 10 instances and will target tests that carry annotation set
+   inside the class under **@CucumberOptions** -> **tags**
+3. From XLM files `src/main/java/com.sixsentix.xmlExecution` -> those xml files will target runner class in our case
+   RunTests and in them, you can set number of threads for execution.
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+### REPORTING:
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+**We are currently generating multiple reports for our tests**
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+1. `project/test-output`
+    1. `pdf` -> this package contains **PDF** report for tests that are executed through either **Runner class** or **
+       XML file**.
+    2. `spark`-> this package contains **HTML** report for tests that are executed through either **Runner class** or **
+       XML file**.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
-
+2. `project/test-output-thread` -> this package contains **HTML** report for **threads** and tests that are executed **
+   in multithreading** through either **Runner class** or **XML file**. 
